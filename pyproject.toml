@@ -1,0 +1,14 @@
+[project]
+name = "md2wpp"
+version = "0.1.0"
+description = "parse markdown to render on whatsapp"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "marko>=2.1.2",
+]
+
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+]

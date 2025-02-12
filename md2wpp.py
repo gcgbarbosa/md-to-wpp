@@ -1,8 +1,19 @@
 import marko
+from marko.helpers import MarkoExtension
 from marko.renderer import Renderer
+from marko import inline
+from textwrap import dedent
 
 
-class Lhufas(Renderer):
+class Strikethrough(inline.InlineElement):
+    pattern = r"~~(.+?)~~"  # The regex for strikethrough
+    parse_children = True  # Parse the content inside the tildes
+
+    def __init__(self, match):
+        self.children = match.group(1) # Store the text to be struck through
+
+
+class WppFormatRenderer(Renderer):
     """
     Custom Renderer that converts Markdown elements into the requested custom format.
     """
@@ -127,13 +138,16 @@ class Lhufas(Renderer):
         url = element.dest or ""
         return f"[{alt_text}] ({url})"
 
-    def render_text(self, element):
+
+    def render_raw_text(self, element):
         """
         Render plain text. Handles both string elements and text node objects.
         """
         if isinstance(element, str):
             return element
+
         return element.children
+
 
     def render_line_break(self, element):
         """
@@ -146,5 +160,34 @@ def markdown_to_whatsapp_format(markdown_text: str) -> str:
     """
     Converts Markdown text to the custom format using the CustomFormatRenderer.
     """
-    parser = marko.Markdown(renderer=WahtsappFormatRenderer)  # Pass the class, not an instance
+    ext = MarkoExtension(
+        elements=[Strikethrough],
+        renderer_mixins=[WppFormatRenderer]
+    )
+
+    parser = marko.Markdown(extensions=[ext])
     return parser(markdown_text)
+
+
+if __name__ == "__main__":
+
+    md = dedent("""
+        # Testing MD
+
+        Emphasis, aka italics, with *asterisks* or _underscores_.
+        Strong emphasis, aka bold, with **asterisks** or __underscores__.
+        Combined emphasis with **asterisks and _underscores_**.
+        Strikethrough uses two tildes. ~~Scratch this.~~
+        **This is bold text**
+        __This is bold text__
+        *This is italic text*
+        _This is italic text_ or ~~a~~
+        ~~Strikethrough~~
+    """)
+
+
+    wpp = markdown_to_whatsapp_format(md)
+    
+    print("MD\n\n" + md)
+    print("WPP\n\n" + wpp)
+
