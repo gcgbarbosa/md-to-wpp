@@ -13,8 +13,8 @@ uv run md2wpp.py
 
 ### Before
 
-![before](docs/before.png =250x)
+<img src="https://raw.githubusercontent.com/gcgbarbosa/md-to-wpp/main/docs/before.png" width="250">
 
 ### After
 
-![after](docs/after.png =250x)
+<img src="https://raw.githubusercontent.com/gcgbarbosa/md-to-wpp/main/docs/after.png" width="250">
